@@ -14,7 +14,7 @@
 	</div>
 
 	<br />
-	<h2>List of Not Assigned Tickets</h2>
+	<h2>List of Tickets</h2>
 	
 
 	<c:if test="${not empty msg}">
@@ -57,7 +57,6 @@
 				<th>Status</th>
 				<th>Attachment</th>
 				<th>Active</th>
-				 
 
 			</tr>
 		</thead>
@@ -76,7 +75,7 @@
 								${ticket.attachmentName} </a>
 						</c:if></td>
 					<td>${ticket.active ? 'Yes' : 'No'}</td>
-					 
+
 				</tr>
 			</c:forEach>
 		</tbody>

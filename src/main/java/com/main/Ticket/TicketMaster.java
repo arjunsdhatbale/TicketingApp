@@ -26,6 +26,7 @@ public class TicketMaster {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ticket_id")
 	private Long ticketId;
+	
 	@Column(name = "ticket_name")
 	@NotBlank(message = "Ticket Name is required.")
 	private String ticketName;

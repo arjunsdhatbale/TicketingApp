@@ -3,12 +3,22 @@
 <html>
 <head>
 <title>View Tickets</title>
+<style>
+	.active-tab {
+		font-weight: bold;
+		color: blue;
+		text-decoration: underline;
+	}
+</style>
+
 </head>
 <body>
+	<c:set var="currentPath" value="${pageContext.request.requestURI}" />
 	<div>
-		<a href="/progress/notAssigned" style="margin-right: 15px;">Not Assigned</a>
-		<a href="/ticketStatus/inProgress" style="margin-right: 15px;">InProgress</a> 
-		<a href="/ticketStatus/solved">Solved</a>
+		<a href="/progress" class="${currentPath == '/progress' ? 'active-tab' : ''}" style="margin-right: 15px;"> View All Tickets </a> 
+		<a href="/progress/notAssigned" class="${currentPath == '/progress/notAssigned' ? 'active-tab' : ''}" style="margin-right: 15px;"> Not Assigned </a> 
+		<a href="/progress/inProgress" class="${currentPath == '/progress/inProgress' ? 'active-tab' : ''}" style="margin-right: 15px;"> InProgress </a> 
+		<a href="/progress/solved" class="${currentPath == '/progress/solved' ? 'active-tab' : ''}"> Solved </a>
 	</div>
 
 	<br />

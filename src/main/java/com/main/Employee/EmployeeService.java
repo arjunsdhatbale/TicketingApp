@@ -1,33 +1,58 @@
 package com.main.Employee;
 
 import java.util.List;
+import java.util.Optional;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.ParameterMode;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.StoredProcedureQuery;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class EmployeeService {
-
+	
 	@Autowired
 	private EmployeeRepo employeeRepo; 
 	
-	public void addEmployee(EmployeeMaster emp) {
-		employeeRepo.insertEmployee(emp.getFirstName(),
-				emp.getLastName(), emp.getEmail(),emp.getDesignation(), emp.getRole(), emp.isActive());
+	@PersistenceContext
+	 private EntityManager entityManager;
+	
+	public List<EmployeeMaster> listOfEmployee(){
+		StoredProcedureQuery query = entityManager.createStoredProcedureQuery(
+				"getAllEmployee", EmployeeMaster.class);
+		query.registerStoredProcedureParameter("empId",Long.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("firstName",String.class,ParameterMode.IN);
+		query.registerStoredProcedureParameter("lastName",String.class,ParameterMode.IN);
+		query.setParameter("empId",null);
+		query.setParameter("firstName",null);
+		query.setParameter("lastName", null);
+		return query.getResultList();
 	}
 	
-	public void updateEmployee(EmployeeMaster emp) {
-		employeeRepo.updateEmployee(emp.getEmp_Id(), emp.getFirstName(), emp.getLastName(), emp.getEmail(), emp.getDesignation(), emp.getRole(), emp.isActive());
+	@Transactional
+	public void saveEmployee(@Valid EmployeeMaster employeeMaster) {
+		
+		StoredProcedureQuery query =
+				entityManager.createStoredProcedureQuery("insert_employee",EmployeeMaster.class);
+				
+		
+		query.registerStoredProcedureParameter("firstName",String.class,ParameterMode.IN);
+		query.registerStoredProcedureParameter("lastName",String.class,ParameterMode.IN);
+		
+		query.setParameter("firstName",employeeMaster.getFirstName());
+		query.setParameter("lastName", employeeMaster.getLastName());
+ 
+		query.execute();
 	}
-	
-	public void deleteEmployee(EmployeeMaster emp) {
-		employeeRepo.deleteEmployee(emp.getEmp_Id());
+
+	public Optional<EmployeeMaster> findeByEmployeeId(Long empId) {
+		Optional<EmployeeMaster> emp = employeeRepo.findById(empId);
+		return emp;
 	}
-	
-	public List<EmployeeMaster> getAllListOfEmployee(EmployeeMaster emp) {
-		if(emp == null) emp = new EmployeeMaster();
-		return employeeRepo.getAllEmployee(emp.getEmp_Id(), emp.getFirstName(), emp.getLastName(), emp.getEmail(), emp.getDesignation(), emp.getRole(), emp.isActive());
-	}
-	
-	
 }

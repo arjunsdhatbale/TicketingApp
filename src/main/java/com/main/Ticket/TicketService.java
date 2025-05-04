@@ -44,6 +44,15 @@ public class TicketService {
 		return ticketRepo.findByStatus(StatusMaster.NOT_ASSIGNED);
 	}
 	
+	public List<TicketMaster> getAllInprogressTickets() {
+		logger.info("Request receive to find all not Assigned tickets...");
+		return ticketRepo.findByStatus(StatusMaster.INPROGRESS);
+	}
+	public List<TicketMaster> getAllSolvedTickets() {
+		logger.info("Request receive to find all not Assigned tickets...");
+		return ticketRepo.findByStatus(StatusMaster.SOLVED);
+	}
+	
 	
 }
 

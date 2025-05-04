@@ -41,6 +41,7 @@
         <a href="/users/view" class="btn">Manage Users</a>
         <a href="/ticket/viewTickets" class="btn">Manage Tickets</a>
         <a href="/progress" class="btn">Ticket Progress</a>
+        <a href="/employee" class="btn">Employee</a>
     </div>
 </body>
 </html>
