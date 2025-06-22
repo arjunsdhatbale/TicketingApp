@@ -42,48 +42,48 @@ public class TicketController {
 		this.ticketRepo = ticketRepo;
 		this.ticketService = ticketService;
 	}
-	
+
 	@GetMapping("/viewTickets")
 	public String viewAllTickets(
-	        @RequestParam(required = false) Long ticketId,
-	        @RequestParam(required = false) ProjectMaster project,
-	        @RequestParam(required = false) StatusMaster status,
-	        @RequestParam(defaultValue = "ticketId") String sortField,
-	        @RequestParam(defaultValue = "desc") String sortDir,
-	        Model model
+			@RequestParam(required = false) Long ticketId,
+			@RequestParam(required = false) ProjectMaster project,
+			@RequestParam(required = false) StatusMaster status,
+			@RequestParam(defaultValue = "ticketId") String sortField,
+			@RequestParam(defaultValue = "desc") String sortDir,
+			Model model
 	) {
-	    logger.info("Request received to view all tickets...");
+		logger.info("Request received to view all tickets...");
 
-	    // Apply filters
-	    Specification<TicketMaster> specification = Specification
-	            .where(TicketSpecification.hasTicketId(ticketId))
-	            .and(TicketSpecification.hasProject(project))
-	            .and(TicketSpecification.hasStatus(status));
+		// Apply filters using Specification (or fallback to simple findAll if not using Specification)
+		Specification<TicketMaster> specification = Specification
+				.where(TicketSpecification.hasTicketId(ticketId))
+				.and(TicketSpecification.hasProject(project))
+				.and(TicketSpecification.hasStatus(status));
 
-	    // Sorting logic
-	    Sort sort = sortDir.equalsIgnoreCase("asc") ?
-	            Sort.by(sortField).ascending() : Sort.by(sortField).descending();
+		Sort sort = sortDir.equalsIgnoreCase("asc") ?
+				Sort.by(sortField).ascending() :
+				Sort.by(sortField).descending();
 
-	    // Fetch filtered & sorted data
-	    List<TicketMaster> ticketList = ticketRepo.findAll(specification, sort);
+		List<TicketMaster> ticketList = ticketRepo.findAll(specification, sort);
 
-	    // Set model attributes for data
-	    model.addAttribute("tickets", ticketList);
-	    model.addAttribute("projectList", ProjectMaster.values());
-	    model.addAttribute("statusList", StatusMaster.values());
-	    model.addAttribute("priorityList", PriorityMaster.values()); // Optional: for consistency
+		// Send ticket list to JSP
+		model.addAttribute("tickets", ticketList);
+		model.addAttribute("projectList", ProjectMaster.values());
+		model.addAttribute("statusList", StatusMaster.values());
+		model.addAttribute("priorityList", PriorityMaster.values());
 
-	    // Preserve filter values in the form
-	    model.addAttribute("ticketId", ticketId);
-	    model.addAttribute("project", project);
-	    model.addAttribute("status", status);
-	    model.addAttribute("sortField", sortField);
-	    model.addAttribute("sortDir", sortDir);
+		// Preserve filter values
+		model.addAttribute("ticketId", ticketId);
+		model.addAttribute("project", project);
+		model.addAttribute("status", status);
+		model.addAttribute("sortField", sortField);
+		model.addAttribute("sortDir", sortDir);
 
-	    return "ticket/viewTickets";
+		return "ticket/viewTickets";
 	}
 
-	
+
+
 	@GetMapping("/add")
 	public String showAddForm(Model model) {
 		logger.info("Request receive to show Add Ticket form...");

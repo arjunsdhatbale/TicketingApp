@@ -3,6 +3,8 @@ package com.main.TicketProgress;
 import java.util.List;
 
 import java.util.Optional;
+
+import com.main.Ticket.TicketRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -30,10 +32,12 @@ public class TicketProgressController {
 	private final static Logger logger = LoggerFactory.getLogger(TicketProgressController.class);
 
 	private final TicketService ticketService;
-	private final EmployeeService employeeService; 
-	public TicketProgressController(TicketService ticketService,EmployeeService employeeService) {
+	private final EmployeeService employeeService;
+	private final TicketRepo ticketRepo;
+	public TicketProgressController(TicketService ticketService,EmployeeService employeeService, TicketRepo ticketRepo) {
 		this.ticketService = ticketService;
-		this.employeeService = employeeService; 
+		this.employeeService = employeeService;
+		this.ticketRepo = ticketRepo;
 	}
 	
 	public void prepareView(Model model,List<TicketMaster> tickets) {
@@ -55,7 +59,8 @@ public class TicketProgressController {
 	public String viewNotAssignedAllTickets(Model model) {
 		logger.info("Request receive to view all not assigned tickets...");
 		model.addAttribute("employees", employeeService.listOfEmployee());
-		prepareView(model, ticketService.getAllNotAssignedTickets());
+		List<TicketMaster> listOfNotAssignedTickets = ticketService.getAllNotAssignedTickets();
+		prepareView(model, listOfNotAssignedTickets);
 		return "progress/notAssigned";
 	}
 
@@ -79,40 +84,39 @@ public class TicketProgressController {
 	        @RequestParam Long employeeId,
 	        RedirectAttributes redirectAttributes) {
 		logger.info("Request received to assigned ticket...");
-		System.out.println("===== ASSIGN API CALLED =====");
 	    try {
-	        // 1. Fetch ticket
-	        TicketMaster ticket = ticketService.getTicketByid(ticketId);
-	        if (ticket == null) {
-	            redirectAttributes.addFlashAttribute("msg", "Ticket not found!");
-	            return "redirect:/progress/notAssigned";
-	        }
-
-	        // 2. Fetch employee
-	        Optional<EmployeeMaster> emp = employeeService.findeByEmployeeId(employeeId);
-	        if (emp.isEmpty()) {
-	            redirectAttributes.addFlashAttribute("msg", "Employee not found!");
-	            return "redirect:/progress/notAssigned";
-	        }
-
-	        // 3. Assign employee and change status
-	        ticket.setAssignedTo(emp.get().getFirstName() + " " + emp.get().getLastName());
-	        ticket.setStatus(StatusMaster.INPROGRESS);
-	        ticketService.saveTicket(ticket);
-
-	        redirectAttributes.addFlashAttribute("msg", "Ticket assigned successfully!");
-	        return "redirect:/progress/notAssigned";
-
+			boolean isAssigned = this.ticketService.assignedTicketToEmployee(ticketId,employeeId);
+			if(isAssigned){
+				redirectAttributes.addFlashAttribute("msg","Ticket assigned Successfully...");
+			}else {
+				redirectAttributes.addFlashAttribute("msg","Ticket or Employee not Found...");
+			}
 	    } catch (Exception e) {
-	        // Optional: Log the error for debugging
-	        e.printStackTrace(); // or use a logger
+			logger.error("Error while assiging ticket . " , e);
+
 	        redirectAttributes.addFlashAttribute("msg", "Something went wrong: " + e.getMessage());
-	        return "redirect:/progress/notAssigned";
 	    }
+		return "redirect:/progress/notAssigned";
+	}
+
+	@PostMapping("/updateStatus")
+	public String updateTicketStatus(@RequestParam Long ticketId,
+									 @RequestParam StatusMaster status,
+									 RedirectAttributes redirectAttributes) {
+		TicketMaster ticket = ticketService.getTicketByid(ticketId);
+		if (ticket != null) {
+			ticket.setStatus(status);
+			ticketRepo.save(ticket);
+			redirectAttributes.addFlashAttribute("msg", "Ticket status updated successfully.");
+		} else {
+			redirectAttributes.addFlashAttribute("msg", "Ticket not found.");
+		}
+		return "redirect:/progress/inProgress"; // adjust according to current tab
 	}
 
 
-	
-	
-	
+
+
+
+
 }

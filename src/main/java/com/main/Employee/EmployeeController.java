@@ -67,8 +67,9 @@ public class EmployeeController {
 		
 		logger.info("Request receive to save Employee..");
 		if(bindingResult.hasErrors()) {
-			model.addAttribute("msg", "Error occured during save the employeee");
-			return "redirect:/employee/employeeForm";
+			model.addAttribute("designations",DesignationMaster.values());
+			model.addAttribute("roles",RoleMaster.values());
+			return "employee/employeeForm";
 		}
 		
 		employeeService.saveEmployee(employeeMaster);
@@ -80,7 +81,7 @@ public class EmployeeController {
 	}
 	
 	@GetMapping("/edit/{empId}")
-	public String editEmployee(@PathVariable("empId") Long empId, Model model) {
+	public String edsitEmployee(@PathVariable("empId") Long empId, Model model) {
 	    logger.info("Request received to Edit/Update Employee...");
 
 	    EmployeeMaster existingEmp = employeeService.findeByEmployeeId(empId)

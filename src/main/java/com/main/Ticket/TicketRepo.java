@@ -11,6 +11,5 @@ import com.main.Enum.StatusMaster;
 
 @Repository
 public interface TicketRepo extends JpaRepository<TicketMaster, Long>, JpaSpecificationExecutor<TicketMaster>{
-
-	List<TicketMaster> findByStatus(StatusMaster status);
+    List<TicketMaster> findByStatus(StatusMaster statusMaster);
 }

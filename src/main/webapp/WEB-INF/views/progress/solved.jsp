@@ -2,86 +2,109 @@
 <jsp:include page="/WEB-INF/views/common/header.jsp" />
 <html>
 <head>
-<title>View Tickets</title>
+    <title>Solved Tickets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-<body>
-	<c:set var="currentPath" value="${pageContext.request.requestURI}" />
-	<div>
-		<a href="/progress" class="${currentPath == '/progress' ? 'active-tab' : ''}" style="margin-right: 15px;"> View All Tickets </a> 
-		<a href="/progress/notAssigned" class="${currentPath == '/progress/notAssigned' ? 'active-tab' : ''}" style="margin-right: 15px;"> Not Assigned </a> 
-		<a href="/progress/inProgress" class="${currentPath == '/progress/inProgress' ? 'active-tab' : ''}" style="margin-right: 15px;"> InProgress </a> 
-		<a href="/progress/solved" class="${currentPath == '/progress/solved' ? 'active-tab' : ''}"> Solved </a>
-	</div>
+<body class="container mt-4">
 
-	<br />
-	<h2>List of Tickets</h2>
-	
+<!-- Navigation Tabs -->
+<ul class="nav nav-tabs mb-4">
+    <li class="nav-item"><a class="nav-link ${currentPath == '/progress' ? 'active' : ''}" href="/progress">View All</a></li>
+    <li class="nav-item"><a class="nav-link ${currentPath == '/progress/notAssigned' ? 'active' : ''}" href="/progress/notAssigned">Not Assigned</a></li>
+    <li class="nav-item"><a class="nav-link ${currentPath == '/progress/inProgress' ? 'active' : ''}" href="/progress/inProgress">In Progress</a></li>
+    <li class="nav-item"><a class="nav-link ${currentPath == '/progress/solved' ? 'active' : ''}" href="/progress/solved">Solved</a></li>
+</ul>
 
-	<c:if test="${not empty msg}">
-		<script>
-			alert('${msg}');
-		</script>
-	</c:if>
-	<div id="attachmentModal"
-		style="display: none; position: fixed; top: 30%; left: 35%; background: white; border: 1px solid #ccc; padding: 20px; z-index: 999;">
-		<p id="attachmentTitle"></p>
-		<button id="viewBtn">View Attachment</button>
-		<button id="downloadBtn">Download Attachment</button>
-		<button onclick="closeModal()">Cancel</button>
-	</div>
-	<script>
-		function openModal(ticketId, fileName) {
-			document.getElementById("attachmentTitle").innerText = "Attachment: "
-					+ fileName;
-			document.getElementById("viewBtn").onclick = function() {
-				window.open("/ticket/viewAttachment/" + ticketId, "_blank");
-			};
-			document.getElementById("downloadBtn").onclick = function() {
-				window.location.href = "/ticket/download/" + ticketId;
-			};
-			document.getElementById("attachmentModal").style.display = "block";
-		}
+<h2 class="text-success mb-3">✅ Solved Tickets</h2>
 
-		function closeModal() {
-			document.getElementById("attachmentModal").style.display = "none";
-		}
-	</script>
-	<table border="1" cellpadding="8" cellspacing="0">
-		<thead>
-			<tr>
-				<th>Ticket ID</th>
-				<th>Ticket Name</th>
-				<th>App ID</th>
-				<th>Project</th>
-				<th>Priority</th>
-				<th>AssignedTo</th>
-				<th>Status</th>
-				<th>Attachment</th>
-				<th>Active</th>
+<!-- Toast/Alert -->
+<c:if test="${not empty msg}">
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        ${msg}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</c:if>
 
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach var="ticket" items="${tickets}">
-				<tr>
-					<td>${ticket.ticketId}</td>
-					<td>${ticket.ticketName}</td>
-					<td>${ticket.appId}</td>
-					<td>${ticket.project}</td>
-					<td>${ticket.priority}</td>
-					<td>${empty ticket.assignedTo ? 'Not Assigned' : ticket.assignedTo}</td>
-					<td>${ticket.status}</td>
-					<td><c:if test="${not empty ticket.attachmentName}">
-							<a href="javascript:void(0);"
-								onclick="openModal(${ticket.ticketId}, '${ticket.attachmentName}')">
-								${ticket.attachmentName} </a>
-						</c:if></td>
-					<td>${ticket.active ? 'Yes' : 'No'}</td>
+<!-- Modal for Attachment -->
+<div class="modal fade" id="attachmentModal" tabindex="-1" aria-labelledby="attachmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Attachment Viewer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p id="attachmentTitle"></p>
+                <button id="viewBtn" class="btn btn-outline-primary me-2">View</button>
+                <button id="downloadBtn" class="btn btn-outline-success">Download</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
+<script>
+    function openModal(ticketId, fileName) {
+        document.getElementById("attachmentTitle").innerText = "Attachment: " + fileName;
+        document.getElementById("viewBtn").onclick = function () {
+            window.open("/ticket/viewAttachment/" + ticketId, "_blank");
+        };
+        document.getElementById("downloadBtn").onclick = function () {
+            window.location.href = "/ticket/download/" + ticketId;
+        };
+        new bootstrap.Modal(document.getElementById("attachmentModal")).show();
+    }
+</script>
+
+<!-- Table -->
+<div class="table-responsive">
+    <table class="table table-bordered table-hover align-middle">
+        <thead class="table-success">
+            <tr>
+                <th>Ticket ID</th>
+                <th>Ticket Name</th>
+                <th>App ID</th>
+                <th>Project</th>
+                <th>Priority</th>
+                <th>Assigned To</th>
+                <th>Status</th>
+                <th>Attachment</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            <c:forEach var="ticket" items="${tickets}">
+                <tr>
+                    <td>${ticket.ticketId}</td>
+                    <td>${ticket.ticketName}</td>
+                    <td>${ticket.appId}</td>
+                    <td>${ticket.project}</td>
+                    <td>${ticket.priority}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${not empty ticket.assignedTo}">
+                                ${ticket.assignedTo}
+                            </c:when>
+                            <c:otherwise>
+                                <span class="text-danger">Not Assigned</span>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                    <td><span class="badge bg-success">${ticket.status}</span></td>
+                    <td>
+                        <c:if test="${not empty ticket.attachmentName}">
+                            <a href="javascript:void(0);" class="text-decoration-none text-primary"
+                               onclick="openModal(${ticket.ticketId}, '${ticket.attachmentName}')">
+                                📎 ${ticket.attachmentName}
+                            </a>
+                        </c:if>
+                    </td>
+                    <td>${ticket.active ? 'Yes' : 'No'}</td>
+                </tr>
+            </c:forEach>
+        </tbody>
+    </table>
+</div>
 
 </body>
 </html>

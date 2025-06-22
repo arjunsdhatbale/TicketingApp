@@ -9,15 +9,20 @@ import com.main.Enum.ProjectMaster;
 import com.main.Enum.StatusMaster;
 
 public class TicketSpecification {
-	
-	public static Specification<TicketMaster> hasTicketId(Long ticketId){
-		return (root,query,cb) -> 
-			ticketId != null ? null : cb.equal(root.get("ticketId"), ticketId);
-	}
+
+    public static Specification<TicketMaster> hasTicketId(Long ticketId) {
+        return (root, query, cb) -> {
+            if (ticketId == null) return null;
+            return cb.equal(root.get("ticketId"), ticketId);
+        };
+    }
+
 
     public static Specification<TicketMaster> hasTicketNameLike(String ticketName) {
-        return (root, query, cb) ->
-                StringUtils.hasText(ticketName) ? cb.like(cb.lower(root.get("ticketName")), "%" + ticketName.toLowerCase() + "%") : null;
+        return (root, query, cb) -> {
+            if (ticketName == null) return null;
+            return StringUtils.hasText(ticketName) ? cb.like(cb.lower(root.get("ticketName")), "%" + ticketName.toLowerCase() + "%") : null;
+        };
     }
 
     public static Specification<TicketMaster> hasAppIdLike(String appId) {
@@ -26,6 +31,7 @@ public class TicketSpecification {
     }
 
     public static Specification<TicketMaster> hasProject(ProjectMaster project) {
+        if(project == null) return  null;
         return (root, query, cb) -> project != null ? cb.equal(root.get("project"), project) : null;
     }
 
@@ -34,8 +40,11 @@ public class TicketSpecification {
     }
 
     public static Specification<TicketMaster> hasStatus(StatusMaster status) {
-        return (root, query, cb) ->
-                status == null ? null : cb.equal(root.get("status"), status);
+        return (root, query, cb) -> {
+            if(status == null) return  null;
+            return status == null ? null : cb.equal(root.get("status"), status);
+        };
+
     }
 
 
