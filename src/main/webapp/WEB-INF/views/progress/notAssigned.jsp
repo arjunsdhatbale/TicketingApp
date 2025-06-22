@@ -7,15 +7,23 @@
 <body>
 	<c:set var="currentPath" value="${pageContext.request.requestURI}" />
 	<div>
-		<a href="/progress" class="${currentPath == '/progress' ? 'active-tab' : ''}" style="margin-right: 15px;"> View All Tickets </a> 
-		<a href="/progress/notAssigned" class="${currentPath == '/progress/notAssigned' ? 'active-tab' : ''}" style="margin-right: 15px;"> Not Assigned </a> 
-		<a href="/progress/inProgress" class="${currentPath == '/progress/inProgress' ? 'active-tab' : ''}" style="margin-right: 15px;"> InProgress </a> 
-		<a href="/progress/solved" class="${currentPath == '/progress/solved' ? 'active-tab' : ''}"> Solved </a>
+		<a href="/progress"
+			class="${currentPath == '/progress' ? 'active-tab' : ''}"
+			style="margin-right: 15px;"> View All Tickets </a> <a
+			href="/progress/notAssigned"
+			class="${currentPath == '/progress/notAssigned' ? 'active-tab' : ''}"
+			style="margin-right: 15px;"> Not Assigned </a> <a
+			href="/progress/inProgress"
+			class="${currentPath == '/progress/inProgress' ? 'active-tab' : ''}"
+			style="margin-right: 15px;"> InProgress </a> <a
+			href="/progress/solved"
+			class="${currentPath == '/progress/solved' ? 'active-tab' : ''}">
+			Solved </a>
 	</div>
 
 	<br />
 	<h2>List of Not Assigned Tickets</h2>
-	
+
 
 	<c:if test="${not empty msg}">
 		<script>
@@ -57,7 +65,9 @@
 				<th>Status</th>
 				<th>Attachment</th>
 				<th>Active</th>
-				 
+				<th>Assign To</th>
+
+
 
 			</tr>
 		</thead>
@@ -76,7 +86,21 @@
 								${ticket.attachmentName} </a>
 						</c:if></td>
 					<td>${ticket.active ? 'Yes' : 'No'}</td>
-					 
+					<td>
+						<form action="${pageContext.request.contextPath}/progress/assign"
+							method="post">
+							<input type="hidden" name="ticketId" value="${ticket.ticketId}" />
+							<select name="employeeId" required>
+								<option value="">-- Select Employee --</option>
+								<c:forEach items="${employees}" var="emp">
+									<option value="${emp.empId}">${emp.firstName}
+										${emp.lastName}</option>
+								</c:forEach>
+							</select> <input type="submit" value="Assign" />
+						</form>
+					</td>
+
+
 				</tr>
 			</c:forEach>
 		</tbody>

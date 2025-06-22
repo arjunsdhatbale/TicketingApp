@@ -29,9 +29,13 @@ public class EmployeeService {
 		query.registerStoredProcedureParameter("empId",Long.class, ParameterMode.IN);
 		query.registerStoredProcedureParameter("firstName",String.class,ParameterMode.IN);
 		query.registerStoredProcedureParameter("lastName",String.class,ParameterMode.IN);
+		query.registerStoredProcedureParameter("designation", String.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("role", String.class, ParameterMode.IN);
 		query.setParameter("empId",null);
 		query.setParameter("firstName",null);
 		query.setParameter("lastName", null);
+		query.setParameter("designation", null);
+		query.setParameter("role", null);
 		return query.getResultList();
 	}
 	
@@ -39,15 +43,18 @@ public class EmployeeService {
 	public void saveEmployee(@Valid EmployeeMaster employeeMaster) {
 		
 		StoredProcedureQuery query =
-				entityManager.createStoredProcedureQuery("insert_employee",EmployeeMaster.class);
+				entityManager.createStoredProcedureQuery("INSERT_OR_UPDATE_EMPLOYEE",EmployeeMaster.class);
 				
-		
+		query.registerStoredProcedureParameter("empId", Long.class, ParameterMode.IN);
 		query.registerStoredProcedureParameter("firstName",String.class,ParameterMode.IN);
 		query.registerStoredProcedureParameter("lastName",String.class,ParameterMode.IN);
-		
+		query.registerStoredProcedureParameter("designation", String.class, ParameterMode.IN);
+		query.registerStoredProcedureParameter("role", String.class, ParameterMode.IN);
+		query.setParameter("empId", employeeMaster.getEmpId());
 		query.setParameter("firstName",employeeMaster.getFirstName());
 		query.setParameter("lastName", employeeMaster.getLastName());
- 
+		query.setParameter("designation", employeeMaster.getDesignation().name());
+		query.setParameter("role", employeeMaster.getRole().name());
 		query.execute();
 	}
 
@@ -55,4 +62,10 @@ public class EmployeeService {
 		Optional<EmployeeMaster> emp = employeeRepo.findById(empId);
 		return emp;
 	}
+
+	public void deleteByEmployeeId(Long empId) {
+		employeeRepo.deleteById(empId);
+	}
+
+	 
 }

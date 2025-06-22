@@ -62,6 +62,7 @@
 				<th>App ID</th>
 				<th>Project</th>
 				<th>Priority</th>
+				<th>AssignedTo</th>
 				<th>Status</th>
 				<th>Attachment</th>
 				<th>Active</th>
@@ -76,6 +77,7 @@
 					<td>${ticket.appId}</td>
 					<td>${ticket.project}</td>
 					<td>${ticket.priority}</td>
+					<td>${empty ticket.assignedTo ? 'Not Assigned' : ticket.assignedTo}</td>
 					<td>${ticket.status}</td>
 					<td><c:if test="${not empty ticket.attachmentName}">
 							<a href="javascript:void(0);"

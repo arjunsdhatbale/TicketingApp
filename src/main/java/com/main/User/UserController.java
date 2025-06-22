@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,9 +46,26 @@ public class UserController {
 	}
 
 	@GetMapping("/view")
-	public String viewUsers(Model model) {
+	public String viewUsers(
+			
+			@RequestParam(required = false)String userName,
+			@RequestParam(required = false)String email,
+			@RequestParam(required = false)Boolean active,
+			@RequestParam(defaultValue = "id")String sortField,
+			@RequestParam(defaultValue = "desc")String sortDir,
+			Model model
+			
+			) {
 		logger.info("Request receive to view all users...");
-		List<User> userList  = userRepo.findAll();
+		
+		Specification<User> spec = Specification.where(UserSpecification.hasUserNameLike(userName))
+				.and(UserSpecification.hasEmailLike(email))
+				.and(UserSpecification.hasActive(active));
+		
+		Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortField).ascending() : Sort.by(sortField).descending();
+		
+		List<User> userList  = userRepo.findAll(spec,sort);
+		
 		model.addAttribute("users", userList);
 		return "user/viewUserList";
 	}

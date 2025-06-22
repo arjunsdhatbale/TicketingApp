@@ -37,12 +37,6 @@
     </form:select><br/>
     <form:errors path="priority" cssClass="error" /><br/>
 
-    <label>Status:</label>
-    <form:select path="status">
-        <form:options items="${status}" />
-    </form:select><br/>
-    <form:errors path="status" cssClass="error" /><br/>
-
     <!-- ✅ File Upload Field -->
     <label>Attachment (PDF/JPA):</label>
     <input type="file" name="file" accept=".pdf,.jpa,.txt,.docx,.xlsx" /><br/><br/>

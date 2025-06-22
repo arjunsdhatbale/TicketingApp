@@ -22,8 +22,5 @@ public class LoginController {
 	public String handleError() {
 		return "error"; // Create an error.jsp page for a user-friendly message
 	}
-//	@GetMapping("/dashboard")
-//	public String dashboard() {
-//		return "dashboard"; // dashboard.jsp
-//	}
+ 
 }

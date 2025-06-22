@@ -31,6 +31,9 @@ public class TicketService {
 	}
 
 	public void saveTicket(@Valid TicketMaster ticketMaster) {
+		TicketMaster tickettobesaved = new TicketMaster(); 
+		tickettobesaved = ticketMaster; 
+		tickettobesaved.setStatus(StatusMaster.NOT_ASSIGNED);
 		ticketRepo.save(ticketMaster);
 	}
 

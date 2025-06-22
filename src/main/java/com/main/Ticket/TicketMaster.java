@@ -2,6 +2,9 @@ package com.main.Ticket;
 
 import java.util.Arrays;
 
+import org.springframework.beans.factory.annotation.Value;
+
+import com.main.Employee.EmployeeMaster;
 import com.main.Enum.PriorityMaster;
 import com.main.Enum.ProjectMaster;
 import com.main.Enum.StatusMaster;
@@ -14,6 +17,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -45,6 +50,10 @@ public class TicketMaster {
 	@Enumerated(EnumType.STRING)
 	private PriorityMaster priority;
 	
+ 
+	@Column(name = "assigned_to")
+	private String assignedTo; 
+	
 	@Lob
 	@Column(name = "attachment",columnDefinition = "longblob")
 	private byte[] attachment;
@@ -69,6 +78,7 @@ public class TicketMaster {
 	 * @param appId
 	 * @param project
 	 * @param priority
+	 * @param assignedTo
 	 * @param attachment
 	 * @param attachmentName
 	 * @param status
@@ -77,14 +87,15 @@ public class TicketMaster {
 	public TicketMaster(Long ticketId, @NotBlank(message = "Ticket Name is required.") String ticketName,
 			@NotBlank(message = "Ticket Id is required.") String appId,
 			@NotNull(message = "Project Name must be selected") ProjectMaster project,
-			@NotNull(message = "Priority must be selected...") PriorityMaster priority, byte[] attachment,
-			String attachmentName, StatusMaster status, Boolean active) {
+			@NotNull(message = "Priority must be selected...") PriorityMaster priority, String assignedTo,
+			byte[] attachment, String attachmentName, StatusMaster status, Boolean active) {
 		super();
 		this.ticketId = ticketId;
 		this.ticketName = ticketName;
 		this.appId = appId;
 		this.project = project;
 		this.priority = priority;
+		this.assignedTo = assignedTo;
 		this.attachment = attachment;
 		this.attachmentName = attachmentName;
 		this.status = status;
@@ -131,6 +142,14 @@ public class TicketMaster {
 		this.priority = priority;
 	}
 
+	public String getAssignedTo() {
+		return assignedTo;
+	}
+
+	public void setAssignedTo(String assignedTo) {
+		this.assignedTo = assignedTo;
+	}
+
 	public byte[] getAttachment() {
 		return attachment;
 	}
@@ -166,10 +185,12 @@ public class TicketMaster {
 	@Override
 	public String toString() {
 		return "TicketMaster [ticketId=" + ticketId + ", ticketName=" + ticketName + ", appId=" + appId + ", project="
-				+ project + ", priority=" + priority + ", attachment=" + Arrays.toString(attachment)
-				+ ", attachmentName=" + attachmentName + ", status=" + status + ", active=" + active + "]";
+				+ project + ", priority=" + priority + ", assignedTo=" + assignedTo + ", attachment="
+				+ Arrays.toString(attachment) + ", attachmentName=" + attachmentName + ", status=" + status
+				+ ", active=" + active + "]";
 	}
  
+	 
 }
 
 

@@ -12,4 +12,6 @@ public class TicketingAppApplication {
 		SpringApplication.run(TicketingAppApplication.class, args);
 	}
 
+
+
 }

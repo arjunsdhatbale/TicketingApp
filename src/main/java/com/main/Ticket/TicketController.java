@@ -2,6 +2,7 @@ package com.main.Ticket;
 
  
 import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,8 @@ import com.main.Enum.ProjectMaster;
 import com.main.Enum.StatusMaster;
 
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpHeaders;
 import jakarta.validation.Valid;
 
@@ -41,14 +44,45 @@ public class TicketController {
 	}
 	
 	@GetMapping("/viewTickets")
-	public String viewAllTickets(Model model) {
-		logger.info("Request receive to view All Tickets ...");
-		model.addAttribute("tickets", ticketRepo.findAll());
-		model.addAttribute("priority", PriorityMaster.values());
-		model.addAttribute("project", ProjectMaster.values());
-		model.addAttribute("status", StatusMaster.values());
-		return "ticket/viewTickets";
+	public String viewAllTickets(
+	        @RequestParam(required = false) Long ticketId,
+	        @RequestParam(required = false) ProjectMaster project,
+	        @RequestParam(required = false) StatusMaster status,
+	        @RequestParam(defaultValue = "ticketId") String sortField,
+	        @RequestParam(defaultValue = "desc") String sortDir,
+	        Model model
+	) {
+	    logger.info("Request received to view all tickets...");
+
+	    // Apply filters
+	    Specification<TicketMaster> specification = Specification
+	            .where(TicketSpecification.hasTicketId(ticketId))
+	            .and(TicketSpecification.hasProject(project))
+	            .and(TicketSpecification.hasStatus(status));
+
+	    // Sorting logic
+	    Sort sort = sortDir.equalsIgnoreCase("asc") ?
+	            Sort.by(sortField).ascending() : Sort.by(sortField).descending();
+
+	    // Fetch filtered & sorted data
+	    List<TicketMaster> ticketList = ticketRepo.findAll(specification, sort);
+
+	    // Set model attributes for data
+	    model.addAttribute("tickets", ticketList);
+	    model.addAttribute("projectList", ProjectMaster.values());
+	    model.addAttribute("statusList", StatusMaster.values());
+	    model.addAttribute("priorityList", PriorityMaster.values()); // Optional: for consistency
+
+	    // Preserve filter values in the form
+	    model.addAttribute("ticketId", ticketId);
+	    model.addAttribute("project", project);
+	    model.addAttribute("status", status);
+	    model.addAttribute("sortField", sortField);
+	    model.addAttribute("sortDir", sortDir);
+
+	    return "ticket/viewTickets";
 	}
+
 	
 	@GetMapping("/add")
 	public String showAddForm(Model model) {
